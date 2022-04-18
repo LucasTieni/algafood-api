@@ -1,0 +1,27 @@
+{"properties": [
+  {
+    "name": "algafood.storage.local.photos-directory",
+    "type": "java.lang.String",
+    "description": "A description for 'algafood.storage.local.photos-directory'"
+  },
+  {
+    "name": "algafood.storage.type",
+    "type": "java.lang.String",
+    "description": "A description for 'algafood.storage.type'"
+  },
+  {
+    "name": "algafood.storage.tipo",
+    "type": "java.lang.String",
+    "description": "A description for 'algafood.storage.tipo'"
+  },
+  {
+    "name": "algafood.email.remetente",
+    "type": "java.lang.String",
+    "description": "A description for 'algafood.email.remetente'"
+  },
+  {
+    "name": "algafood.email.sandbox.destinatario",
+    "type": "java.lang.String",
+    "description": "A description for 'algafood.email.sandbox.destinatario'"
+  }
+]}
