@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,10 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafood.api.DTO.RestauranteApenasNomeDTO;
+import com.algaworks.algafood.api.DTO.RestauranteBasicoDTO;
 import com.algaworks.algafood.api.DTO.RestauranteDTO;
 import com.algaworks.algafood.api.DTO.input.RestauranteInput;
-import com.algaworks.algafood.api.DTO.view.RestauranteView;
+import com.algaworks.algafood.api.assembler.RestauranteApenasNomeDTOAssembler;
 import com.algaworks.algafood.api.assembler.RestauranteAssembler;
+import com.algaworks.algafood.api.assembler.RestauranteBasicoDTOAssembler;
 import com.algaworks.algafood.api.assembler.RestauranteDTOAssembler;
 import com.algaworks.algafood.domain.exception.CidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.CozinhaNaoEncontradaException;
@@ -31,8 +35,8 @@ import com.algaworks.algafood.domain.exception.RestauranteNaoEncontradoException
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.repository.RestauranteRepository;
 import com.algaworks.algafood.domain.service.CadastroRestauranteService;
-import com.fasterxml.jackson.annotation.JsonView;
 
+//@CrossOrigin(maxAge = 20)
 @RestController
 @RequestMapping(value = "/restaurantes")
 public class RestauranteController {
@@ -48,45 +52,23 @@ public class RestauranteController {
 	
 	@Autowired
 	private RestauranteDTOAssembler restauranteDTOAssembler;
-		
+	
+	@Autowired
+	private RestauranteApenasNomeDTOAssembler restauranteApenasNomeDTOAssembler;
+	
+	@Autowired
+	private RestauranteBasicoDTOAssembler restauranteBasicoDTOAssembler;
+	
+	@GetMapping(params = "projecao=apenas-nome")
+	public CollectionModel<RestauranteApenasNomeDTO> listarApenasNomes() {
+		return restauranteApenasNomeDTOAssembler.toCollectionDTO(restauranteRepository.findAll());
+	}
 	
 	@GetMapping
-	public List<RestauranteDTO> listar() {
-		return restauranteDTOAssembler.toCollectionDTO(restauranteRepository.findAll());
+	public CollectionModel<RestauranteBasicoDTO> listarResumido() {
+		return restauranteBasicoDTOAssembler.toCollectionDTO(restauranteRepository.findAll());
 	}
-	
-//	@JsonView(RestauranteView.Resumo.class)
-//	@GetMapping(params = "projecao=resumo")
-//	public List<RestauranteDTO> listarResumido() {
-//		return listar();
-//	}
-//	
-	@JsonView(RestauranteView.ApenasNome.class)
-	@GetMapping(params = "projecao=apenas-nome")
-	public List<RestauranteDTO> listarApenasNomes() {
-		return listar();
-	}
-	
-//	@GetMapping
-//	public MappingJacksonValue listar(@RequestParam(required=false) String projecao) {
-//		List<Restaurante> restaurantes = restauranteRepository.findAll();
-//		List<RestauranteDTO> restaurantesDTO = restauranteDTOAssembler.toCollectionDTO(restaurantes);
-//		
-//		MappingJacksonValue restaurantesWrapper = new MappingJacksonValue(restaurantesDTO);
-//		
-//		restaurantesWrapper.setSerializationView(RestauranteView.Resumo.class);
-//		
-//		if ("apenas-nome".equalsIgnoreCase(projecao)) {
-//			restaurantesWrapper.setSerializationView(RestauranteView.ApenasNome.class);
-//		} else if ("completo".equalsIgnoreCase(projecao)) {
-//			restaurantesWrapper.setSerializationView(null);			
-//		}
-//		
-//		
-//		return restaurantesWrapper;
-//	}
 
-	@ResponseStatus(HttpStatus.CREATED)
 	@GetMapping("/{id}")
 	public RestauranteDTO buscar(@PathVariable Long id) {
 		Restaurante restaurante = cadastroRestaurante.buscarOuFalhar(id);
@@ -137,26 +119,30 @@ public class RestauranteController {
 	
 	@PutMapping("/{restauranteId}/active")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void activate(@PathVariable Long restauranteId) {
+	public ResponseEntity<Void> activate(@PathVariable Long restauranteId) {
 		cadastroRestaurante.activate(restauranteId);
+		return ResponseEntity.noContent().build();
 	}
 	
-	@DeleteMapping("/{restauranteId}/deactive")
+	@DeleteMapping("/{restauranteId}/active")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deactivate(@PathVariable Long restauranteId) {
+	public ResponseEntity<Void> deactivate(@PathVariable Long restauranteId) {
 		cadastroRestaurante.deactivate(restauranteId);
+		return ResponseEntity.noContent().build();
 	}
 	
 	@PutMapping("/{restauranteId}/open")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void open(@PathVariable Long restauranteId) {
+	public ResponseEntity<Void> open(@PathVariable Long restauranteId) {
 		cadastroRestaurante.open(restauranteId);
+		return ResponseEntity.noContent().build();
 	}
 	
 	@PutMapping("/{restauranteId}/close")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void close(@PathVariable Long restauranteId) {
+	public ResponseEntity<Void> close(@PathVariable Long restauranteId) {
 		cadastroRestaurante.close(restauranteId);
+		return ResponseEntity.noContent().build();
 	}
 	
 	@PutMapping("/multiactivation")

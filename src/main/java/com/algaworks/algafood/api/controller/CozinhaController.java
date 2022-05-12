@@ -1,14 +1,13 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,15 +43,17 @@ public class CozinhaController {
 	@Autowired
 	private CozinhaAssembler cozinhaAssembler;
 	
+	@Autowired
+	private PagedResourcesAssembler<Cozinha> pagedResourcesAssembler;
+	
 	@GetMapping
-	public Page<CozinhaDTO> listar(Pageable pageable) {
+	public PagedModel<CozinhaDTO> listar(Pageable pageable) {
 		Page<Cozinha> pageKitchens = cozinhaRepository.findAll(pageable);
 		
-		List<CozinhaDTO> kitchensDTO = cozinhaDTOAssembler.toCollectionDTO(pageKitchens.getContent());
+		PagedModel<CozinhaDTO> cozinhasPagedModel = pagedResourcesAssembler
+				.toModel(pageKitchens, cozinhaDTOAssembler);
 		
-		Page<CozinhaDTO> kitchensDTOPage = new PageImpl<>(kitchensDTO, pageable, pageKitchens.getTotalElements());
-		
-		return kitchensDTOPage;
+		return cozinhasPagedModel;
 	}
 
 	@ResponseStatus(HttpStatus.CREATED)
@@ -63,15 +64,18 @@ public class CozinhaController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Cozinha adicionar(@RequestBody @Valid CozinhaInput cozinhaInput) {
-		return cadastroCozinha.salvar(cozinhaAssembler.toDomainObject(cozinhaInput));
+	public CozinhaDTO adicionar(@RequestBody @Valid CozinhaInput cozinhaInput) {
+		Cozinha cozinhaSalva = cadastroCozinha.salvar(cozinhaAssembler.toDomainObject(cozinhaInput));
+		
+		return cozinhaDTOAssembler.toModel(cozinhaSalva);
 	}
 
 	@PutMapping("/{id}")
-	public Cozinha atualizar(@PathVariable Long id, @RequestBody Cozinha cozinha) {
+	public CozinhaDTO atualizar(@PathVariable Long id, @RequestBody Cozinha cozinha) {
 		Cozinha cozinhaAtual = cadastroCozinha.buscarOuFalhar(id);
 		BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
-		return cadastroCozinha.salvar(cozinhaAtual);
+		
+		return cozinhaDTOAssembler.toModel(cadastroCozinha.salvar(cozinhaAtual));
 	}
 
 	@DeleteMapping("/{id}")

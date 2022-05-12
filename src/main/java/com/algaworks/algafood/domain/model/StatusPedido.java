@@ -22,8 +22,12 @@ public enum StatusPedido {
 		return this.descricao;
 	}
 	
-	public boolean cannotChangeFor(StatusPedido novoStatus) {
+	public boolean cannotChangeTo(StatusPedido novoStatus) {
 		return !novoStatus.statusAnteriores.contains(this);
+	}
+	
+	public boolean canChangeTo(StatusPedido novoStatus) {
+		return !cannotChangeTo(novoStatus);
 	}
 	
 	

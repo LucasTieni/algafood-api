@@ -2,6 +2,7 @@ package com.algaworks.algafood.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,20 +20,26 @@ public class FluxoPedidoController {
 	
 	@PutMapping("/confirmacao")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void confirmar(@PathVariable String codigoPedido) {
+	public ResponseEntity<Void> confirmar(@PathVariable String codigoPedido) {
 		fluxoPedido.confirmar(codigoPedido);
+		
+		return ResponseEntity.noContent().build();
 	}
 	
 	@PutMapping("/entregar")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void entregue(@PathVariable String codigoPedido) {
+	public ResponseEntity<Void> entregue(@PathVariable String codigoPedido) {
 		fluxoPedido.entrega(codigoPedido);
+		
+		return ResponseEntity.noContent().build();
 	}
 	
 	@PutMapping("/cancelamento")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void cancelar(@PathVariable String codigoPedido) {
+	public ResponseEntity<Void> cancelar(@PathVariable String codigoPedido) {
 		fluxoPedido.cancelar(codigoPedido);
+		
+		return ResponseEntity.noContent().build();
 	}
 	
 	

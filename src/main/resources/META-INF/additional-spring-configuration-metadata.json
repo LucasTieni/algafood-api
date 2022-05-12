@@ -23,5 +23,10 @@
     "name": "algafood.email.sandbox.destinatario",
     "type": "java.lang.String",
     "description": "A description for 'algafood.email.sandbox.destinatario'"
+  },
+  {
+    "name": "algafood.email.password",
+    "type": "java.lang.String",
+    "description": "A description for 'algafood.email.password'"
   }
 ]}

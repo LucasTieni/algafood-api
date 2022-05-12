@@ -89,6 +89,30 @@ public class Restaurante {
 		setAberto(false);
 	}
 	
+	public boolean isAberto(){
+		return this.aberto;
+	}
+	
+	public boolean isFechado() {
+		return !isAberto();
+	}
+	
+	public boolean isAtivo() {
+		return this.ativo;
+	}
+	
+	public boolean isInativo() {
+		return !isAtivo();
+	}
+	
+	public boolean aberturaPermitida() {
+		return isAtivo() && isFechado();
+	}
+	
+	public boolean ativacaoPermitida() {
+		return isInativo();
+	}
+	
 	public boolean addUser(Usuario user) {
 		return getResponsaveis().add(user);
 	}

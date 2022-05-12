@@ -1,15 +1,15 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +25,7 @@ import com.algaworks.algafood.api.DTO.input.PedidoInput;
 import com.algaworks.algafood.api.assembler.PedidoAssembler;
 import com.algaworks.algafood.api.assembler.PedidoDTOAssembler;
 import com.algaworks.algafood.api.assembler.PedidoResumoDTOAssembler;
+import com.algaworks.algafood.core.data.PageWrapper;
 import com.algaworks.algafood.core.data.PageableTranslator;
 import com.algaworks.algafood.domain.exception.CidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
@@ -56,17 +57,22 @@ public class PedidoController {
 	@Autowired
 	private PedidoResumoDTOAssembler pedidoResumoDTOAssembler;
 	
+	@Autowired
+	private PagedResourcesAssembler<Pedido> pagedResourcesAssembler;
+	
+	
 	@GetMapping
-	public Page<PedidoResumoDTO> pesquisar(PedidoFilter pedidoFilter, @PageableDefault(size=10) Pageable pageable) {
-		pageable = translatePageable(pageable);
+	public PagedModel<PedidoResumoDTO> pesquisar(PedidoFilter pedidoFilter, 
+			@PageableDefault(size=10) Pageable pageable) {
+				
+		Pageable pageableTranslated = translatePageable(pageable);
 		
-		Page<Pedido> pageOrders = pedidoRepository.findAll(PedidoSpecs.usandoFiltro(pedidoFilter), pageable);
+		Page<Pedido> pagePedidos = pedidoRepository.findAll(
+				PedidoSpecs.usandoFiltro(pedidoFilter), pageableTranslated);
 		
-		List<PedidoResumoDTO> ordersResumoDTO = pedidoResumoDTOAssembler.toCollectionDTO(pageOrders.getContent());
+		pagePedidos = new PageWrapper<>(pagePedidos, pageable);
 		
-		Page<PedidoResumoDTO> ordersResumoDTOPage = new PageImpl<>(ordersResumoDTO, pageable, pageOrders.getTotalElements());
-		
-		return ordersResumoDTOPage;
+		return pagedResourcesAssembler.toModel(pagePedidos, pedidoResumoDTOAssembler);
 	}
 
 	@ResponseStatus(HttpStatus.CREATED)

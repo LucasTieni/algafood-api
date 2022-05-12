@@ -112,8 +112,21 @@ public class Pedido extends AbstractAggregateRoot<Pedido>{
 		setDataCancelamento(OffsetDateTime.now());
 	}
 	
+	public boolean podeSerConfirmado() {
+		return getStatus().canChangeTo(StatusPedido.CONFIRMADO);
+	}
+	
+	public boolean podeSerCancelado() {
+		return getStatus().canChangeTo(StatusPedido.CANCELADO);
+	}
+	
+	public boolean podeSerEntregue() {
+		return getStatus().canChangeTo(StatusPedido.ENTREGUE);
+	}
+	
+	
 	private void setStatus(StatusPedido novoStatus) {
-		if (getStatus().cannotChangeFor(novoStatus)) {
+		if (getStatus().cannotChangeTo(novoStatus)) {
 			throw new NegocioException(
 					String.format("Status do pedido %s não pode ser alterado de %s para %s", 
 							getCodigo(), getStatus().getDescricao(), novoStatus.getDescricao()));

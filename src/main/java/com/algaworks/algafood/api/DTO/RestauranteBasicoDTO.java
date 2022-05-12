@@ -13,7 +13,7 @@ import lombok.Setter;
 @Relation(collectionRelation = "restaurantes")
 @Setter
 @Getter
-public class RestauranteDTO extends RepresentationModel<RestauranteDTO>{
+public class RestauranteBasicoDTO extends RepresentationModel<RestauranteBasicoDTO>{
 	
 	@ApiModelProperty(example = "1")
 	private Long id;
@@ -25,8 +25,5 @@ public class RestauranteDTO extends RepresentationModel<RestauranteDTO>{
 	private BigDecimal taxaFrete;
 	
 	private CozinhaDTO cozinha;
-	private Boolean ativo;
-	private Boolean aberto;
-	private EnderecoDTO endereco;
 	
 }

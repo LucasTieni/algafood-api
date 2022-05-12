@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,8 @@ import com.algaworks.algafood.domain.model.Usuario;
 import com.algaworks.algafood.domain.repository.UsuarioRepository;
 import com.algaworks.algafood.domain.service.CadastroUsuarioService;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping(value = "/usuarios")
 public class UsuarioController{
@@ -45,10 +48,11 @@ public class UsuarioController{
 	@Autowired
 	private UsuarioAssembler usuarioAssembler;
 	
+	@ApiOperation("Lista os usuários")
 	@GetMapping
-	public List<UsuarioDTO> listar() {
+	public CollectionModel<UsuarioDTO> listar() {
 		List<Usuario> allUsers = usuarioRepository.findAll(); 
-		return usuarioDTOAssembler.toCollectionDTO(allUsers);
+		return usuarioDTOAssembler.toCollectionModel(allUsers);
 	}
 
 	@ResponseStatus(HttpStatus.CREATED)

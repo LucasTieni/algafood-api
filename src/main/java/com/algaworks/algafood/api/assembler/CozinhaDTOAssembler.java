@@ -1,28 +1,38 @@
 package com.algaworks.algafood.api.assembler;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+import com.algaworks.algafood.api.AlgaLinks;
 import com.algaworks.algafood.api.DTO.CozinhaDTO;
+import com.algaworks.algafood.api.controller.CozinhaController;
 import com.algaworks.algafood.domain.model.Cozinha;
 
 @Component
-public class CozinhaDTOAssembler {
+public class CozinhaDTOAssembler extends RepresentationModelAssemblerSupport<Cozinha, CozinhaDTO>{
 	
+
 	@Autowired  
 	private ModelMapper modelMapper;
 	
-	public CozinhaDTO toModel(Cozinha cozinha) {
-		return modelMapper.map(cozinha, CozinhaDTO.class);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+	@Autowired 
+	private AlgaLinks algaLinks;
+	
+	public CozinhaDTOAssembler() {
+		super(CozinhaController.class, CozinhaDTO.class);
 	}
 	
-	public List<CozinhaDTO> toCollectionDTO(List<Cozinha> cozinhas){
-		return cozinhas.stream()
-				.map(cozinha -> toModel(cozinha))
-				.collect(Collectors.toList());
+	@Override
+	public CozinhaDTO toModel(Cozinha cozinha) {
+		CozinhaDTO cozinhaDTO = createModelWithId(cozinha.getId(), cozinha);
+		
+		modelMapper.map(cozinha, cozinhaDTO);
+		
+		cozinhaDTO.add(algaLinks.linkToCozinha("cozinhas"));
+		
+		return cozinhaDTO;
 	}
+	
 }

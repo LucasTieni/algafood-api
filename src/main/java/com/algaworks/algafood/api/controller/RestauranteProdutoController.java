@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafood.api.AlgaLinks;
 import com.algaworks.algafood.api.DTO.ProdutoDTO;
 import com.algaworks.algafood.api.DTO.input.ProdutoInput;
 import com.algaworks.algafood.api.assembler.ProdutoAssembler;
@@ -48,8 +50,12 @@ public class RestauranteProdutoController {
 	@Autowired
 	private CadastroRestauranteService cadastroRestaurante;
 	
+	@Autowired
+	private AlgaLinks algaLinks;
+	
 	@GetMapping
-	public List<ProdutoDTO> listar(@PathVariable Long restauranteId, @RequestParam(required = false) boolean incluirInativos) {
+	public CollectionModel<ProdutoDTO> listar(@PathVariable Long restauranteId, 
+			@RequestParam(required = false, defaultValue = "false") Boolean incluirInativos) {
 		Restaurante restaurante = cadastroRestaurante.buscarOuFalhar(restauranteId);
 		
 		List<Produto> allProducts = null;
@@ -60,7 +66,7 @@ public class RestauranteProdutoController {
 			allProducts = produtoRepository.findAtivosByRestaurante(restaurante);
 		}
 		
-		return produtoDTOAssembler.toCollectionDTO(allProducts);
+		return produtoDTOAssembler.toCollectionModel(allProducts).add(algaLinks.linkToProdutos(restauranteId));
 	}
 
 	@ResponseStatus(HttpStatus.CREATED)

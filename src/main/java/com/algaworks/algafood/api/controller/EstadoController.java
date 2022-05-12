@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,10 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafood.api.DTO.EstadoDTO;
+import com.algaworks.algafood.api.assembler.EstadoDTOAssembler;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.model.Estado;
 import com.algaworks.algafood.domain.repository.EstadoRepository;
 import com.algaworks.algafood.domain.service.CadastroEstadoService;
+
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/estados")
@@ -34,17 +39,20 @@ public class EstadoController {
 	private CadastroEstadoService cadastroEstado;
 
 	@Autowired
-//	private EstadoDTOAssembler estadoDTOAssembler;
+	private EstadoDTOAssembler estadoDTOAssembler;
 	
+	@ApiOperation("Lista os estados")
 	@GetMapping
-	public List<Estado> listar() {
-		return estadoRepository.findAll();
+	public CollectionModel<EstadoDTO> listar() {
+		List<Estado> allStates = estadoRepository.findAll();
+		
+		return estadoDTOAssembler.toCollectionModel(allStates);
 	}
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@GetMapping("/{id}")
-	public Estado buscar(@PathVariable Long id) {
-		return cadastroEstado.buscarOuFalhar(id);
+	public EstadoDTO buscar(@PathVariable Long id) {
+		return estadoDTOAssembler.toModel(cadastroEstado.buscarOuFalhar(id));
 	}
 
 	@PostMapping
