@@ -2,8 +2,6 @@ package com.algaworks.algafood.api.v1.controller;
 
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,16 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.algaworks.algafood.api.exceptionhandler.ApiExceptionHandler;
 import com.algaworks.algafood.api.v1.DTO.CozinhaDTO;
 import com.algaworks.algafood.api.v1.DTO.input.CozinhaInput;
 import com.algaworks.algafood.api.v1.assembler.CozinhaAssembler;
 import com.algaworks.algafood.api.v1.assembler.CozinhaDTOAssembler;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.repository.CozinhaRepository;
 import com.algaworks.algafood.domain.service.CadastroCozinhaService;
-
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(value = "/v1/cozinhas")
@@ -51,12 +47,9 @@ public class CozinhaController {
 	@Autowired
 	private PagedResourcesAssembler<Cozinha> pagedResourcesAssembler;
 	
+	@CheckSecurity.Cozinhas.PodeConsultar
 	@GetMapping
 	public PagedModel<CozinhaDTO> listar(Pageable pageable) {
-		
-		if (true) {
-			throw new RuntimeException("Teste de exception");
-		}
 		
 		Page<Cozinha> pageKitchens = cozinhaRepository.findAll(pageable);
 		
@@ -65,13 +58,15 @@ public class CozinhaController {
 		
 		return cozinhasPagedModel;
 	}
-
+	
+	@CheckSecurity.Cozinhas.PodeConsultar
 	@ResponseStatus(HttpStatus.CREATED)
 	@GetMapping("/{id}")
 	public CozinhaDTO buscar(@PathVariable Long id) {
 		return cozinhaDTOAssembler.toModel(cadastroCozinha.buscarOuFalhar(id));
 	}		
-
+	
+	@CheckSecurity.Cozinhas.PodeEditar
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public CozinhaDTO adicionar(@RequestBody @Valid CozinhaInput cozinhaInput) {
@@ -80,6 +75,7 @@ public class CozinhaController {
 		return cozinhaDTOAssembler.toModel(cozinhaSalva);
 	}
 
+	@CheckSecurity.Cozinhas.PodeEditar
 	@PutMapping("/{id}")
 	public CozinhaDTO atualizar(@PathVariable Long id, @RequestBody Cozinha cozinha) {
 		Cozinha cozinhaAtual = cadastroCozinha.buscarOuFalhar(id);
@@ -87,7 +83,8 @@ public class CozinhaController {
 		
 		return cozinhaDTOAssembler.toModel(cadastroCozinha.salvar(cozinhaAtual));
 	}
-
+	
+	@CheckSecurity.Cozinhas.PodeEditar
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long id){

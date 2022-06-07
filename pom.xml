@@ -19,6 +19,8 @@
 		<aws-java-sdk-s3.version>1.12.199</aws-java-sdk-s3.version>
 		<springfox.version>3.0.0</springfox.version>
 		<logback-ext-loggly.version>0.1.5</logback-ext-loggly.version>
+		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
+		<oauth2-oidc-sdk.version>6.21.2</oauth2-oidc-sdk.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -138,6 +140,32 @@
 			<artifactId>logback-ext-loggly</artifactId>
 			<version>${logback-ext-loggly.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session-data-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>oauth2-oidc-sdk</artifactId>
+			<version>${oauth2-oidc-sdk.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -167,5 +195,35 @@
 <plugin><artifactId>maven-failsafe-plugin</artifactId></plugin>
 		</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>docker</id>
+			<build>
+				<plugins>
+					<plugin>
+					  <groupId>com.spotify</groupId>
+					  <artifactId>dockerfile-maven-plugin</artifactId>
+					  <version>${dockerfile-maven-version}</version>
+					  <executions>
+					    <execution>
+					      <id>default</id>
+					      <goals>
+					        <goal>build</goal>
+					        <goal>push</goal>
+					      </goals>
+					    </execution>
+					  </executions>
+					  <configuration>
+					    <repository>algafood-api</repository>
+					    <buildArgs>
+					      <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+					    </buildArgs>
+					  </configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

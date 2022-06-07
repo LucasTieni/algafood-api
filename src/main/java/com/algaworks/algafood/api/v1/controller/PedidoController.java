@@ -27,6 +27,7 @@ import com.algaworks.algafood.api.v1.assembler.PedidoDTOAssembler;
 import com.algaworks.algafood.api.v1.assembler.PedidoResumoDTOAssembler;
 import com.algaworks.algafood.core.data.PageWrapper;
 import com.algaworks.algafood.core.data.PageableTranslator;
+import com.algaworks.algafood.core.security.AlgaSecurity;
 import com.algaworks.algafood.domain.exception.CidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.exception.PedidoNaoEncontradoException;
@@ -60,6 +61,8 @@ public class PedidoController {
 	@Autowired
 	private PagedResourcesAssembler<Pedido> pagedResourcesAssembler;
 	
+	@Autowired
+	private AlgaSecurity algaSecurity;
 	
 	@GetMapping
 	public PagedModel<PedidoResumoDTO> pesquisar(PedidoFilter pedidoFilter, 
@@ -89,7 +92,7 @@ public class PedidoController {
 			Pedido pedido = pedidoAssembler.toDomainObject(pedidoInput);
 			
 	        pedido.setCliente(new Usuario());
-	        pedido.getCliente().setId(5L);
+	        pedido.getCliente().setId(algaSecurity.getUsuarioId());
 			
 			return pedidoDTOAssembler.toModel(cadastroPedido.salvar(pedido));
 		} catch (PedidoNaoEncontradoException | CidadeNaoEncontradaException e) {
