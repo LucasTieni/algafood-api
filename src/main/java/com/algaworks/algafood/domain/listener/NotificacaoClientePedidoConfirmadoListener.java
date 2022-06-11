@@ -18,12 +18,11 @@ public class NotificacaoClientePedidoConfirmadoListener {
 	@TransactionalEventListener
 	public void aoConfirmarPedido(PedidoConfirmadoEvent event) {
 		
-		System.out.println("aoConfirmarPedido");
 		Pedido pedido = event.getPedido();
 		
 		var mensagem = Message.builder()
 				.assunto(pedido.getRestaurante().getNome() + " - Pedido confirmado")
-				.corpo("pedido-confirmado.html")
+				.corpo("emails/pedido-confirmado.html")
 				.variavel("pedido", pedido)
 				.destinatario(pedido.getCliente().getEmail())
 				.build();
