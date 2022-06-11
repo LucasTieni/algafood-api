@@ -22,6 +22,7 @@ import com.algaworks.algafood.api.v1.DTO.ProdutoDTO;
 import com.algaworks.algafood.api.v1.DTO.input.ProdutoInput;
 import com.algaworks.algafood.api.v1.assembler.ProdutoAssembler;
 import com.algaworks.algafood.api.v1.assembler.ProdutoDTOAssembler;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.exception.ProdutoNaoEncontradoException;
 import com.algaworks.algafood.domain.exception.RestauranteNaoEncontradoException;
@@ -53,6 +54,7 @@ public class RestauranteProdutoController {
 	@Autowired
 	private AlgaLinks algaLinks;
 	
+	@CheckSecurity.Restaurantes.PodeConsultar
 	@GetMapping
 	public CollectionModel<ProdutoDTO> listar(@PathVariable Long restauranteId, 
 			@RequestParam(required = false, defaultValue = "false") Boolean incluirInativos) {
@@ -69,13 +71,15 @@ public class RestauranteProdutoController {
 		return produtoDTOAssembler.toCollectionModel(allProducts).add(algaLinks.linkToProdutos(restauranteId));
 	}
 
+	@CheckSecurity.Restaurantes.PodeConsultar
 	@ResponseStatus(HttpStatus.CREATED)
 	@GetMapping("/{produtoId}")
 	public ProdutoDTO buscar(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
 		Produto produto = cadastroProduto.buscarOuFalhar(restauranteId, produtoId);
 		return produtoDTOAssembler.toModel(produto);
 	}
-
+	
+	@CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ProdutoDTO adicionar (@PathVariable Long restauranteId, @RequestBody @Valid ProdutoInput produtoInput){
@@ -90,7 +94,8 @@ public class RestauranteProdutoController {
 			throw new NegocioException(e.getMessage());
 		}
 	}
-
+	
+	@CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
 	@PutMapping("/{produtoId}")
 	public ProdutoDTO atualizar(@PathVariable Long restauranteId, @PathVariable Long produtoId,
 			@RequestBody @Valid ProdutoInput produtoInput) {
@@ -105,19 +110,4 @@ public class RestauranteProdutoController {
 		}
 	}
 
-//	@DeleteMapping("/{id}")
-//	public ResponseEntity<Produto> remover(@PathVariable Long id){
-//		try {
-//			cadastroProduto.excluir(id);
-//
-//			return ResponseEntity.noContent().build();
-//
-//		} catch (EntidadeNaoEncontradaException e) {
-//			return ResponseEntity.notFound().build();
-//
-//		} catch (EntidadeEmUsoException e) {
-//			return ResponseEntity.status(HttpStatus.CONFLICT).build();
-//
-//		}
-//	}
 }

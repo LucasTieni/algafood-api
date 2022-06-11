@@ -15,10 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.algaworks.algafood.api.v1.AlgaLinks;
 import com.algaworks.algafood.api.v1.DTO.UsuarioDTO;
 import com.algaworks.algafood.api.v1.assembler.UsuarioDTOAssembler;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.service.CadastroRestauranteService;
-
-import io.swagger.annotations.ApiParam;
 
 @RestController
 @RequestMapping(value = "/v1/restaurantes/{restauranteId}/usuarios")
@@ -33,8 +32,10 @@ public class RestauranteUsuarioController {
 	@Autowired
 	private AlgaLinks algaLinks;
 	
+	@CheckSecurity.Restaurantes.PodeConsultar
 	@GetMapping
-	public CollectionModel<UsuarioDTO> listar(@ApiParam(value = "ID do restaurante", example = "1", required = true) 
+	public CollectionModel<UsuarioDTO> listar(
+//			@ApiParam(value = "ID do restaurante", example = "1", required = true) 
 			@PathVariable Long restauranteId) {
 		Restaurante restaurante = cadastroRestaurante.buscarOuFalhar(restauranteId);
 		
@@ -51,6 +52,7 @@ public class RestauranteUsuarioController {
 		return usuariosDTO;
 	}
 	
+	@CheckSecurity.Restaurantes.PodeGerenciarCadastro
 	@PutMapping("/{userId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<Void> add(@PathVariable Long restauranteId, @PathVariable Long userId) {
@@ -58,6 +60,7 @@ public class RestauranteUsuarioController {
 		return ResponseEntity.noContent().build();
 	}
 	
+	@CheckSecurity.Restaurantes.PodeGerenciarCadastro
 	@DeleteMapping("/{userId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<Void> remove(@PathVariable Long restauranteId, @PathVariable Long userId) {

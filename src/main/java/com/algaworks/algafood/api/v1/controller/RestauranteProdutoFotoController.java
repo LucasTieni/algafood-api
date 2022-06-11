@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.algaworks.algafood.api.v1.DTO.FotoProdutoDTO;
 import com.algaworks.algafood.api.v1.DTO.input.FotoProdutoInput;
 import com.algaworks.algafood.api.v1.assembler.FotoProdutoDTOAssembler;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.model.FotoProduto;
 import com.algaworks.algafood.domain.model.Produto;
@@ -48,6 +49,7 @@ public class RestauranteProdutoFotoController {
 	@Autowired
 	private FotoStorageService fotoStorage;
 	
+	@CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
 	@PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public FotoProdutoDTO updatePhoto(@PathVariable Long restauranteId, 
 			@PathVariable Long produtoId, @Valid FotoProdutoInput fotoProdutoInput) throws IOException {
@@ -68,6 +70,7 @@ public class RestauranteProdutoFotoController {
 		return fotoProdutoDTOAssembler.toModel(fotoSalva);
 	}
 	
+	@CheckSecurity.Restaurantes.PodeConsultar
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public FotoProdutoDTO buscar(@PathVariable Long restauranteId, 
 			@PathVariable Long produtoId) {
@@ -105,6 +108,7 @@ public class RestauranteProdutoFotoController {
 		}
 	}
 	
+	@CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
 	@DeleteMapping
 	public ResponseEntity<FotoProduto> remover(@PathVariable Long restauranteId, 
 			@PathVariable Long produtoId){

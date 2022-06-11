@@ -27,6 +27,7 @@ import com.algaworks.algafood.api.v1.DTO.FormaPagamentoDTO;
 import com.algaworks.algafood.api.v1.DTO.input.FormaPagamentoInput;
 import com.algaworks.algafood.api.v1.assembler.FormaPagamentoAssembler;
 import com.algaworks.algafood.api.v1.assembler.FormaPagamentoDTOAssembler;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.exception.EstadoNaoEncontradoException;
 import com.algaworks.algafood.domain.exception.FormaPagamentoNaoEncontradoException;
 import com.algaworks.algafood.domain.exception.NegocioException;
@@ -50,6 +51,7 @@ public class FormaPagamentoController {
 	@Autowired
 	private FormaPagamentoAssembler formaPagamentoAssembler;
 	
+	@CheckSecurity.FormasPagamento.PodeConsultar
 	@GetMapping
 	public ResponseEntity<CollectionModel<FormaPagamentoDTO>> listar(ServletWebRequest request) {
 		ShallowEtagHeaderFilter.disableContentCaching(request.getRequest());
@@ -76,6 +78,7 @@ public class FormaPagamentoController {
 				.body(formasPagamentoDTO);
 	}
 
+	@CheckSecurity.FormasPagamento.PodeConsultar
 	@ResponseStatus(HttpStatus.CREATED)
 	@GetMapping("/{formaPagamentoId}")
 	public ResponseEntity<FormaPagamentoDTO> buscar(@PathVariable Long formaPagamentoId, ServletWebRequest request) {

@@ -26,6 +26,7 @@ import com.algaworks.algafood.api.v1.assembler.RestauranteApenasNomeDTOAssembler
 import com.algaworks.algafood.api.v1.assembler.RestauranteAssembler;
 import com.algaworks.algafood.api.v1.assembler.RestauranteBasicoDTOAssembler;
 import com.algaworks.algafood.api.v1.assembler.RestauranteDTOAssembler;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.exception.CidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.CozinhaNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.EntidadeEmUsoException;
@@ -59,23 +60,27 @@ public class RestauranteController {
 	@Autowired
 	private RestauranteBasicoDTOAssembler restauranteBasicoDTOAssembler;
 	
+	@CheckSecurity.Restaurantes.PodeConsultar
 	@GetMapping(params = "projecao=apenas-nome")
 	public CollectionModel<RestauranteApenasNomeDTO> listarApenasNomes() {
 		return restauranteApenasNomeDTOAssembler.toCollectionDTO(restauranteRepository.findAll());
 	}
 	
+	@CheckSecurity.Restaurantes.PodeConsultar
 	@GetMapping
 	public CollectionModel<RestauranteBasicoDTO> listarResumido() {
 		return restauranteBasicoDTOAssembler.toCollectionDTO(restauranteRepository.findAll());
 	}
-
+	
+	@CheckSecurity.Restaurantes.PodeConsultar
 	@GetMapping("/{id}")
 	public RestauranteDTO buscar(@PathVariable Long id) {
 		Restaurante restaurante = cadastroRestaurante.buscarOuFalhar(id);
 		
 		return restauranteDTOAssembler.toModel(restaurante);
 	}
-
+	
+	@CheckSecurity.Restaurantes.PodeGerenciarCadastro
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public RestauranteDTO adicionar (@RequestBody @Valid RestauranteInput restauranteInput){
@@ -87,7 +92,8 @@ public class RestauranteController {
 			throw new NegocioException(e.getMessage());
 		}
 	}
-
+	
+	@CheckSecurity.Restaurantes.PodeGerenciarCadastro
 	@PutMapping("/{id}")
 	public RestauranteDTO atualizar(@PathVariable Long id, @RequestBody @Valid RestauranteInput restauranteInput) {
 		Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(id);
@@ -100,7 +106,8 @@ public class RestauranteController {
 			throw new NegocioException(e.getMessage());
 		}
 	}
-
+	
+	@CheckSecurity.Restaurantes.PodeGerenciarCadastro
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Restaurante> remover(@PathVariable Long id){
 		try {
@@ -117,6 +124,7 @@ public class RestauranteController {
 		}
 	}
 	
+	@CheckSecurity.Restaurantes.PodeGerenciarCadastro
 	@PutMapping("/{restauranteId}/active")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<Void> activate(@PathVariable Long restauranteId) {
@@ -124,6 +132,7 @@ public class RestauranteController {
 		return ResponseEntity.noContent().build();
 	}
 	
+	@CheckSecurity.Restaurantes.PodeGerenciarCadastro
 	@DeleteMapping("/{restauranteId}/active")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<Void> deactivate(@PathVariable Long restauranteId) {
@@ -131,6 +140,7 @@ public class RestauranteController {
 		return ResponseEntity.noContent().build();
 	}
 	
+	@CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
 	@PutMapping("/{restauranteId}/open")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<Void> open(@PathVariable Long restauranteId) {
@@ -138,6 +148,7 @@ public class RestauranteController {
 		return ResponseEntity.noContent().build();
 	}
 	
+	@CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
 	@PutMapping("/{restauranteId}/close")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<Void> close(@PathVariable Long restauranteId) {
@@ -145,6 +156,7 @@ public class RestauranteController {
 		return ResponseEntity.noContent().build();
 	}
 	
+	@CheckSecurity.Restaurantes.PodeGerenciarCadastro
 	@PutMapping("/multiactivation")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void multiactivation(@RequestBody List<Long> restauranteIds) {
@@ -155,6 +167,7 @@ public class RestauranteController {
 		}	
 	}
 	
+	@CheckSecurity.Restaurantes.PodeGerenciarCadastro
 	@DeleteMapping("/multideactivation")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void multideactivation(@RequestBody List<Long> restauranteIds) {

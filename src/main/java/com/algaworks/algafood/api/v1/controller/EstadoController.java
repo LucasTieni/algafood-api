@@ -21,12 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.v1.DTO.EstadoDTO;
 import com.algaworks.algafood.api.v1.assembler.EstadoDTOAssembler;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.model.Estado;
 import com.algaworks.algafood.domain.repository.EstadoRepository;
 import com.algaworks.algafood.domain.service.CadastroEstadoService;
-
-import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/v1/estados")
@@ -41,20 +40,23 @@ public class EstadoController {
 	@Autowired
 	private EstadoDTOAssembler estadoDTOAssembler;
 	
-	@ApiOperation("Lista os estados")
+	@CheckSecurity.Estado.PodeConsultar
+//	@ApiOperation("Lista os estados")
 	@GetMapping
 	public CollectionModel<EstadoDTO> listar() {
 		List<Estado> allStates = estadoRepository.findAll();
 		
 		return estadoDTOAssembler.toCollectionModel(allStates);
 	}
-
+	
+	@CheckSecurity.Estado.PodeConsultar
 	@ResponseStatus(HttpStatus.CREATED)
 	@GetMapping("/{id}")
 	public EstadoDTO buscar(@PathVariable Long id) {
 		return estadoDTOAssembler.toModel(cadastroEstado.buscarOuFalhar(id));
 	}
-
+	
+	@CheckSecurity.Estado.PodeEditar
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<?> adicionar (@RequestBody @Valid Estado estado){
@@ -70,13 +72,15 @@ public class EstadoController {
 		}
 	}
 
+	@CheckSecurity.Estado.PodeEditar
 	@PutMapping("/{id}")
 	public Estado atualizar(@PathVariable Long id, @RequestBody @Valid Estado estado) {
 		Estado estadoAtual = cadastroEstado.buscarOuFalhar(id);
 		BeanUtils.copyProperties(estado, estadoAtual, "id");
 		return cadastroEstado.salvar(estadoAtual);
 	}
-
+	
+	@CheckSecurity.Estado.PodeEditar
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long id){

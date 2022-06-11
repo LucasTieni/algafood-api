@@ -23,14 +23,13 @@ import com.algaworks.algafood.api.v1.DTO.input.UsuarioComSenhaInput;
 import com.algaworks.algafood.api.v1.DTO.input.UsuarioInput;
 import com.algaworks.algafood.api.v1.assembler.UsuarioAssembler;
 import com.algaworks.algafood.api.v1.assembler.UsuarioDTOAssembler;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.exception.EstadoNaoEncontradoException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.exception.UsuarioNaoEncontradoException;
 import com.algaworks.algafood.domain.model.Usuario;
 import com.algaworks.algafood.domain.repository.UsuarioRepository;
 import com.algaworks.algafood.domain.service.CadastroUsuarioService;
-
-import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping(value = "/v1/usuarios")
@@ -48,13 +47,15 @@ public class UsuarioController{
 	@Autowired
 	private UsuarioAssembler usuarioAssembler;
 	
-	@ApiOperation("Lista os usuários")
+	@CheckSecurity.UsuariosGruposPermissoes.PodeConsultar
+//	@ApiOperation("Lista os usuários")
 	@GetMapping
 	public CollectionModel<UsuarioDTO> listar() {
 		List<Usuario> allUsers = usuarioRepository.findAll(); 
 		return usuarioDTOAssembler.toCollectionModel(allUsers);
 	}
-
+	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeConsultar
 	@ResponseStatus(HttpStatus.CREATED)
 	@GetMapping("/{id}")
 	public UsuarioDTO buscar(@PathVariable Long id) {
@@ -62,7 +63,8 @@ public class UsuarioController{
 
 		return usuarioDTOAssembler.toModel(usuario);
 	}
-
+	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeEditar
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public UsuarioDTO adicionar (@RequestBody @Valid UsuarioComSenhaInput usuarioComSenhaInput){
@@ -75,7 +77,8 @@ public class UsuarioController{
 			throw new NegocioException(e.getMessage(), e);
 		}
 	}
-
+	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeAlterarUsuario
 	@PutMapping("/{id}")
 	public UsuarioDTO atualizar(@PathVariable Long id, @RequestBody @Valid UsuarioInput usuarioInput) {
 		Usuario usuarioAtual = cadastroUsuario.buscarOuFalhar(id);
@@ -89,21 +92,14 @@ public class UsuarioController{
 		}
 	}
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeAlterarPropriaSenha
 	@PutMapping("/{userId}/password")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void changePassword(@PathVariable Long userId, @RequestBody @Valid SenhaInput senha) {
 		cadastroUsuario.alterarSenha(userId, senha.getSenhaAtual(), senha.getSenhaNova());
 	}
 	
-	
-//	@PutMapping("/{usuarioId}/senha")
-//	@ResponseStatus(HttpStatus.NO_CONTENT)
-//	public void alterarSenha(@PathVariable Long usuarioId, @RequestBody @Valid SenhaInput senha) {
-//		cadastroUsuario.alterarSenha(usuarioId, senha.getSenhaAtual(), senha.getSenhaNova());
-//	}
-	
-	
-
+	@CheckSecurity.UsuariosGruposPermissoes.PodeEditar
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long id){

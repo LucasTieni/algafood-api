@@ -28,6 +28,7 @@ import com.algaworks.algafood.api.v1.assembler.PedidoResumoDTOAssembler;
 import com.algaworks.algafood.core.data.PageWrapper;
 import com.algaworks.algafood.core.data.PageableTranslator;
 import com.algaworks.algafood.core.security.AlgaSecurity;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.exception.CidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.exception.PedidoNaoEncontradoException;
@@ -64,6 +65,7 @@ public class PedidoController {
 	@Autowired
 	private AlgaSecurity algaSecurity;
 	
+	@CheckSecurity.Pedidos.PodePesquisar
 	@GetMapping
 	public PagedModel<PedidoResumoDTO> pesquisar(PedidoFilter pedidoFilter, 
 			@PageableDefault(size=10) Pageable pageable) {
@@ -77,14 +79,15 @@ public class PedidoController {
 		
 		return pagedResourcesAssembler.toModel(pagePedidos, pedidoResumoDTOAssembler);
 	}
-
-	@ResponseStatus(HttpStatus.CREATED)
+	
+	@CheckSecurity.Pedidos.PodeBuscar
 	@GetMapping("/{codigoPedido}")
 	public PedidoDTO buscar(@PathVariable String codigoPedido) {
 		Pedido pedido = cadastroPedido.buscarOuFalhar(codigoPedido);
 		return pedidoDTOAssembler.toModel(pedido);
 	}
-
+	
+	@CheckSecurity.Pedidos.PodeCriar
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public PedidoDTO adicionar (@RequestBody @Valid PedidoInput pedidoInput){

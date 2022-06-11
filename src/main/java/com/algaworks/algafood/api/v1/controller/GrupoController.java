@@ -19,6 +19,7 @@ import com.algaworks.algafood.api.v1.DTO.GrupoDTO;
 import com.algaworks.algafood.api.v1.DTO.input.GrupoInput;
 import com.algaworks.algafood.api.v1.assembler.GrupoAssembler;
 import com.algaworks.algafood.api.v1.assembler.GrupoDTOAssembler;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.exception.GrupoNaoEncontradoException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.model.Grupo;
@@ -41,11 +42,13 @@ public class GrupoController {
 	@Autowired
 	private GrupoAssembler grupoAssembler;
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeConsultar
 	@GetMapping
 	public CollectionModel<GrupoDTO> listar() {
 		return grupoDTOAssembler.toCollectionDTO(grupoRepository.findAll());
 	}
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeConsultar
 	@ResponseStatus(HttpStatus.CREATED)
 	@GetMapping("/{id}")
 	public GrupoDTO buscar(@PathVariable Long id) {
@@ -53,6 +56,7 @@ public class GrupoController {
 		return grupoDTOAssembler.toModel(grupo);
 	}		
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeEditar
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public GrupoDTO adicionar(@RequestBody @Valid GrupoInput grupoInput) {
@@ -60,6 +64,7 @@ public class GrupoController {
 		return grupoDTOAssembler.toModel(cadastroGrupo.salvar(grupo));
 	}
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeEditar
 	@PutMapping("/{id}")
 	public GrupoDTO atualizar(@PathVariable Long id, @RequestBody GrupoInput grupoInput) {
 		Grupo grupoAtual = cadastroGrupo.buscarOuFalhar(id);
@@ -72,6 +77,7 @@ public class GrupoController {
 		}
 	}
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeEditar
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long id){

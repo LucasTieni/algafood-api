@@ -28,11 +28,7 @@ import com.algaworks.algafood.domain.model.Cidade;
 import com.algaworks.algafood.domain.repository.CidadeRepository;
 import com.algaworks.algafood.domain.service.CadastroCidadeService;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
-@Api(tags = "Cidades")
+//@Api(tags = "Cidades")
 @RestController
 @RequestMapping(path = "/v2/cidades", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CidadeControllerV2{
@@ -49,7 +45,7 @@ public class CidadeControllerV2{
 	@Autowired
 	private CidadeAssemblerV2 cidadeAssembler;
 	
-	@ApiOperation("Lista as cidades")
+//	@ApiOperation("Lista as cidades")
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public CollectionModel<CidadeDTOV2> listar() {
 		List<Cidade> allCities = cidadeRepository.findAll();
@@ -57,19 +53,22 @@ public class CidadeControllerV2{
 		return cidadeDTOAssembler.toCollectionModel(allCities);
 	};
 	
-	@ApiOperation("Busca uma cidade por Id")
+//	@ApiOperation("Busca uma cidade por Id")
 	@ResponseStatus(HttpStatus.CREATED)
 	@GetMapping(path = "/{cidadeId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public CidadeDTOV2 buscar(@ApiParam(value="Id de uma Cidade", example = "1") @PathVariable Long cidadeId) {
+	public CidadeDTOV2 buscar(
+//			@ApiParam(value="Id de uma Cidade", example = "1") 
+			@PathVariable Long cidadeId) {
 		Cidade cidade = cadastroCidade.buscarOuFalhar(cidadeId); 
 		
 		return cidadeDTOAssembler.toModel(cidade);
 	}
 	
-	@ApiOperation("Cadastra uma cidade")
+//	@ApiOperation("Cadastra uma cidade")
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public CidadeDTOV2 adicionar (@ApiParam(name="corpo", value = "Representação de uma nova cidade") 
+	public CidadeDTOV2 adicionar (
+//			@ApiParam(name="corpo", value = "Representação de uma nova cidade") 
 		@RequestBody @Valid CidadeInputV2 cidadeInput){
 		try {
 			System.out.println("passou aqui");
@@ -82,11 +81,12 @@ public class CidadeControllerV2{
 		}
 	}
 	
-	@ApiOperation("Atualiza uma cidade por Id")
+//	@ApiOperation("Atualiza uma cidade por Id")
 	@PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public CidadeDTOV2 atualizar(
-			@ApiParam(value = "Id de uma cidade") @PathVariable Long id, 
-			@ApiParam(name="corpo", value = "Representação de uma nova cidade com os novos dados") 
+//			@ApiParam(value = "Id de uma cidade") 
+			@PathVariable Long id, 
+//			@ApiParam(name="corpo", value = "Representação de uma nova cidade com os novos dados") 
 			@RequestBody @Valid CidadeInputV2 cidadeInput) {
 		Cidade cidadeAtual = cadastroCidade.buscarOuFalhar(id);
 		
@@ -99,10 +99,12 @@ public class CidadeControllerV2{
 		}
 	}
 	
-	@ApiOperation("Exclui uma cidade por Id")
+//	@ApiOperation("Exclui uma cidade por Id")
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void remover(@ApiParam(value = "Id de uma cidade a ser excluida") @PathVariable Long id){
+	public void remover(
+//			@ApiParam(value = "Id de uma cidade a ser excluida")
+			@PathVariable Long id){
 		cadastroCidade.excluir(id);
 	}
 	
