@@ -8,7 +8,7 @@ public class SecurityController {
 	
 	@GetMapping("/login")
 	public String login() {
-		return "/pages/login";
+		return "pages/login";
 	}
 	
 	@GetMapping("/oauth/confirm_access")
